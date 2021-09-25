@@ -8,43 +8,35 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
-import com.example.primera.content.contentClass
-import com.example.primera.menu.boolNotify
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 import com.example.primera.menu.cardStart
-import com.google.firebase.database.*
+import com.google.firebase.database.FirebaseDatabase
 import java.util.*
-import kotlin.collections.ArrayList
 
-private lateinit var dbref : DatabaseReference
-private val listCard:MutableList<cardStart> = ArrayList()
-private val listTitle:MutableList<String> = ArrayList()
+private lateinit var uniqueID: kotlin.String
+private lateinit var type: kotlin.String
 private lateinit var dialog: Dialog
-private val CHANNEL_ID = "channelTest"
 
-class CreateCategory : AppCompatActivity() {
+class CreateSubCategory : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_category)
+        setContentView(R.layout.activity_create_sub_category)
 
-        var btnCrearTipo = findViewById<Button>(R.id.btnCrearTipo)
-        var btnRegistro = findViewById<Button>(R.id.btnRegistro)
+        var uniqueID = UUID.randomUUID().toString()
 
-        setupRecyclerView()
+        var txtUID = findViewById<EditText>(R.id.txtIDType)
+        var btnSubir = findViewById<Button>(R.id.btnRegistrar)
 
+        txtUID.setText(uniqueID)
 
-        btnCrearTipo.setOnClickListener {
-            val intent = Intent(this, CreateSubCategory::class.java)
-            startActivity(intent)
-
-        }
-
-        btnRegistro.setOnClickListener {
+        btnSubir.setOnClickListener {
             loadSesion()
-            saveData()
+            crearType()
         }
-
     }
+
 
     private fun saveData (correo:String, online:Boolean, type: String) {
         val sharedPreferences: SharedPreferences = getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
@@ -64,70 +56,21 @@ class CreateCategory : AppCompatActivity() {
         dialog.setCanceledOnTouchOutside(false)
     }
 
-    private fun saveData () {
+    private fun crearType () {
+        var txtUID = findViewById<EditText>(R.id.txtIDType)
         var txtTitle = findViewById<EditText>(R.id.txtTitle)
-        var txtIMG = findViewById<EditText>(R.id.txtIMG)
-        var txtDescrp = findViewById<EditText>(R.id.txtDescrips)
-        var UID = UUID.randomUUID().toString()
-        val type = findViewById<AutoCompleteTextView>(R.id.typeArchive)
+        var txtUrl = findViewById<EditText>(R.id.txtURLI)
+        var UID = txtUID.text.toString()
 
-        var number = 1
-        var types = ""
-        var titleType = ""
 
-        for (i in listCard) {
-            if (type.text.toString() == i.title) {
-                types = i.id
-            }
-        }
-
-        val database = FirebaseDatabase.getInstance().getReference("content")
-        val databaseBool = FirebaseDatabase.getInstance().getReference("boolNotify")
-        val content = contentClass(UID, txtTitle.text.toString(), txtDescrp.text.toString(),types, txtIMG.text.toString())
-        val contentBool = boolNotify(number.toString(), true, type.text.toString(), txtTitle.text.toString())
-        database.child(UID).setValue(content).addOnSuccessListener {
-            Toast.makeText(this, "Contenido agregado correctamente", Toast.LENGTH_LONG).show()
-            databaseBool.child(number.toString()).setValue(contentBool).addOnSuccessListener {
-            }
+        val database = FirebaseDatabase.getInstance().getReference("ArchiType")
+        val cards = cardStart(UID, txtTitle.text.toString(), txtUrl.text.toString())
+        database.child(UID).setValue(cards).addOnSuccessListener {
+            Toast.makeText(this, "Tipo de arcivo creado correctamente", Toast.LENGTH_LONG).show()
             dialog.hide()
             finish()
         }
 
-    }
-
-    private fun setupRecyclerView() {
-        dbref = FirebaseDatabase.getInstance().getReference("ArchiType")
-        dbref.addValueEventListener(object : ValueEventListener {
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                listCard.clear()
-
-                if (snapshot.exists()){
-
-                    for (cardSnapshot in snapshot.children){
-                        val card = cardSnapshot.getValue(cardStart::class.java)
-                        if (card != null) {
-                            listCard.add(card)
-                            listTitle.clear()
-                            for (i in listCard) {
-                                listTitle.add(i.title)
-                            }
-                            val adapters = ArrayAdapter(applicationContext, R.layout.list_item, listTitle)
-                            val text = findViewById<AutoCompleteTextView>(R.id.typeArchive)
-                            text.setAdapter(adapters)
-                        }
-                    }
-
-                }
-
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
 
     }
-
 }

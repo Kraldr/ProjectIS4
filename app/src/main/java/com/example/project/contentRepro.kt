@@ -8,14 +8,31 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.project.R
 import com.example.project.databinding.ActivityContentReproBinding
+import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.ui.PlayerView
+import com.google.android.exoplayer2.upstream.BandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.util.Util
+import com.google.android.youtube.player.YouTubeStandalonePlayer
 
 
 class contentRepro : AppCompatActivity() {
 
     private var meesage:String = ""
+    private var uri:Uri? = null
     private lateinit var binding: ActivityContentReproBinding
+    private var mPlayer: SimpleExoPlayer? = null
+    private lateinit var playerView: PlayerView
+    private var playWhenReady = true
+    private var currentWindow = 0
+    private var playbackPosition: Long = 0
+    val API_KEY = "AIzaSyAbqGBvxxvt7S0ghYWULLGtaNqNZm0egLM"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,11 +42,12 @@ class contentRepro : AppCompatActivity() {
         setContentView(binding.root)
 
         meesage = intent.getStringExtra("url").toString()
+        uri = Uri.parse(meesage)
 
+        playerView = binding.exoPlayerView
 
-        binding.exoPlayerView.prepare(Uri.parse(meesage))
-
-        val playerView = binding.exoPlayerView
+        val intent = YouTubeStandalonePlayer.createVideoIntent(this, API_KEY, "yWr8ZBefKzc")
+        startActivity(intent)
 
         val fullscreenButton = playerView.findViewById<ImageView>(R.id.exo_fullscreen_icon)
 
@@ -75,7 +93,69 @@ class contentRepro : AppCompatActivity() {
             }
         }
 
+    }
 
+    private fun initPlayer() {
+        mPlayer = SimpleExoPlayer.Builder(this).build()
+        // Bind the player to the view.
+        playerView.player = mPlayer
+        mPlayer!!.playWhenReady = true
+        mPlayer!!.seekTo(playbackPosition)
+
+        val mediaDataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, "mediaPlayerSample"))
+        val mediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(Uri.parse(meesage))
+
+        //mPlayer!!.prepare(mediaSource, false, false)
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (Util.SDK_INT >= 24) {
+            initPlayer()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Util.SDK_INT < 24 || mPlayer == null) {
+            initPlayer()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (Util.SDK_INT < 24) {
+            releasePlayer()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (Util.SDK_INT >= 24) {
+            releasePlayer()
+        }
+    }
+
+
+    private fun releasePlayer() {
+        if (mPlayer == null) {
+            return
+        }
+        playWhenReady = mPlayer!!.playWhenReady
+        playbackPosition = mPlayer!!.currentPosition
+        currentWindow = mPlayer!!.currentWindowIndex
+        mPlayer!!.release()
+        mPlayer = null
+    }
+
+    private fun buildMediaSource(): MediaSource {
+        val userAgent =
+            Util.getUserAgent(playerView.context, playerView.context.getString(R.string.app_name))
+
+        val dataSourceFactory = DefaultHttpDataSourceFactory(userAgent)
+
+        return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"))
     }
 
 }

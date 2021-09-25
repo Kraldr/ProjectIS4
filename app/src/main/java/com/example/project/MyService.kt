@@ -68,7 +68,7 @@ class MyService: Service() {
                                 notificationManager.createNotificationChannel(notificationChannel)
 
                                 builder = Notification.Builder(applicationContext, "chaneltest")
-                                    .setContentTitle("Se acaba se subir nuevo contenido de " + listBool[0]!!.type)
+                                    .setContentTitle("Se acaba se subir nuevo contenido de " + listBool[0]!!.type.lowercase())
                                     .setContentText(listBool[0]!!.title)
                                     .setSmallIcon(R.drawable.ic_baseline_person_24)
                                     .setContentIntent(pendingIntent)
