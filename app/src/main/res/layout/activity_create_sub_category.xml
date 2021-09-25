@@ -19,13 +19,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.078">
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="24dp"
+            app:helperTextEnabled="true"
+            app:helperText="New text"
+            app:startIconDrawable="@drawable/ic_baseline_style_24"
+            app:startIconContentDescription="Info Icon"
+            app:errorEnabled="true"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_height="wrap_content">
+
+            <AutoCompleteTextView
+                android:id="@+id/typeCategory"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:hint="Seleccione una opción"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
         <EditText
             android:id="@+id/txtIDType"
             android:enabled="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="-60dp"
             android:layout_marginRight="24dp"
             android:autofillHints="ID"
             android:background="@drawable/ic_field"
@@ -52,7 +74,7 @@
             android:drawableLeft="@drawable/ic_baseline_subtitles_24"
             android:drawablePadding="16dp"
             android:ems="10"
-            android:hint="Tipo de arichivo"
+            android:hint="Titulo"
             android:inputType="text"
             android:padding="16dp" />
 
@@ -69,7 +91,7 @@
             android:drawableLeft="@drawable/ic_baseline_image_24"
             android:drawablePadding="16dp"
             android:ems="10"
-            android:hint="URL Imagen"
+            android:hint="URL"
             android:inputType="textEmailAddress"
             android:padding="16dp" />
 

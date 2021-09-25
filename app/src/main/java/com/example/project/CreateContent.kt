@@ -4,10 +4,12 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.*
 import com.example.primera.content.contentClass
 import com.example.primera.menu.boolNotify
@@ -15,6 +17,9 @@ import com.example.primera.menu.cardStart
 import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
+import android.widget.AdapterView
+import com.google.android.material.textfield.TextInputLayout
+
 
 private lateinit var dbref : DatabaseReference
 private val listCard:MutableList<cardStart> = ArrayList()
@@ -31,6 +36,14 @@ class CreateCategory : AppCompatActivity() {
         var btnRegistro = findViewById<Button>(R.id.btnRegistro)
 
         setupRecyclerView()
+
+        val type = findViewById<AutoCompleteTextView>(R.id.typeArchive)
+        val typeBase = findViewById<AutoCompleteTextView>(R.id.typeBase)
+        if (type.text.toString() == "Finanzas") {
+            typeBase.visibility = View.VISIBLE
+        }else {
+            typeBase.visibility = View.INVISIBLE
+        }
 
 
         btnCrearTipo.setOnClickListener {
@@ -73,11 +86,27 @@ class CreateCategory : AppCompatActivity() {
 
         var number = 1
         var types = ""
-        var titleType = ""
+        var URL = ""
 
         for (i in listCard) {
             if (type.text.toString() == i.title) {
                 types = i.id
+            }
+        }
+
+        if (types == "e7b91f56-902f-4aad-aec1-a9b859d18153") {
+            when {
+                type.text.toString() == "https://www.youtube.com/watch?v=" -> {
+                    val lstValues: List<String> = txtIMG.text.toString().split("v=").map { it -> it.trim() }
+                    URL = lstValues[0]
+                }
+                type.text.toString() == "https://youtu.be/" -> {
+                    val lstValues: List<String> = txtIMG.text.toString().split("be/").map { it -> it.trim() }
+                    URL = lstValues[0]
+                }
+                else -> {
+
+                }
             }
         }
 

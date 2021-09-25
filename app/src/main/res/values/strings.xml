@@ -17,4 +17,9 @@
         <item>Empresa</item>
     </string-array>
 
+    <string-array name="typeCategory">
+        <item>Categoría</item>
+        <item>Subcategoría</item>
+    </string-array>
+
 </resources>
