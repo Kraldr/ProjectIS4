@@ -6,7 +6,7 @@ data class contentClass(
     val descrip:String = "",
     val type:String = "",
     val url:String = "",
-    val typeSubTitle:String = "",
+    val typeSubTitle:String? = "",
     val typeSelect:String = "",
     val typeSelectVideo:String = "",
     val saveAImg:String = ""

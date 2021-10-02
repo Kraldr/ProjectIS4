@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.primera.menu.cardStart
 import com.google.android.youtube.player.YouTubeStandalonePlayer
 import com.google.firebase.database.FirebaseDatabase
 
@@ -23,6 +24,7 @@ class card_top_adapter(
     private val card: MutableList<contentClass>,
     private val context: Context?,
     private val type: String,
+    private val listcard: MutableList<cardStart>,
 ) : RecyclerView.Adapter<card_top_adapter.ViewHolder> () {
 
     private var count: Int = 0
@@ -38,7 +40,11 @@ class card_top_adapter(
         val cards = card[position]
         Glide.with(holder.itemView.context).load(cards.url).into(holder.img);
         holder.ct.text = cards.title
-        holder.ct2.text = cards.title
+        for (i in listcard) {
+            if (i.id == cards.type) {
+                holder.ct2.text = i.title
+            }
+        }
 
         if (cards.typeSelect == "Video") {
 

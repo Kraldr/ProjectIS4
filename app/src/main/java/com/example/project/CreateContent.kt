@@ -4,11 +4,11 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.content.ContextCompat.startActivity
 import com.example.primera.menu.boolNotify
 import com.example.primera.menu.cardStart
 import com.google.firebase.database.*
@@ -30,6 +30,7 @@ private lateinit var txtTitle:EditText
 private lateinit var txtIMG:EditText
 private lateinit var txtDescrp:EditText
 private lateinit var type:AutoCompleteTextView
+private lateinit var cosa: CreateCategory
 private val listIcon:MutableList<String> = ArrayList()
 private val CHANNEL_ID = "channelTest"
 
@@ -48,6 +49,7 @@ class CreateCategory : AppCompatActivity() {
         txtDescrp = findViewById<EditText>(R.id.txtDescrips)
         UID = UUID.randomUUID().toString()
         type = findViewById<AutoCompleteTextView>(R.id.typeArchive)
+        cosa = this@CreateCategory
 
         listIcon.add("https://cdn-icons-png.flaticon.com/512/5781/5781478.png")
         listIcon.add("https://cdn-icons-png.flaticon.com/512/5782/5782789.png")
@@ -139,20 +141,22 @@ class CreateCategory : AppCompatActivity() {
                     adapters = arrayOf()
 
                     var idCategory = ""
-
                     for (i in listCard) {
                         if (i.title == type.text.toString()) {
                             idCategory = i.id
                         }
                     }
 
+                    var count = 0
                     for (i in subCategory) {
                         if (idCategory == i.category){
+                            count++
                             adapters = append(adapters, i.title)
                         }
                     }
 
-                    MaterialAlertDialogBuilder(this@CreateCategory)
+                    if (count > 0) {
+                        MaterialAlertDialogBuilder(this@CreateCategory)
                         .setTitle("Seleccione una subcategoría")
                         .setPositiveButton("Continuar") { _, _ ->
                             if (typeSubID == "") {
@@ -241,8 +245,18 @@ class CreateCategory : AppCompatActivity() {
                                 }
                             }
                         }.show()
+                    }else {
+                        /*Snackbar.make(findViewById(android.R.id.content), "Replace with your own action", Snackbar.LENGTH_LONG)
+                            .setAction("Action", MyUndoListener()).show()*/
 
-
+                        val snack = Snackbar.make(findViewById(android.R.id.content),"No existe una subcategoría",Snackbar.LENGTH_LONG)
+                        snack.setAction("Crear subcategoría", View.OnClickListener {
+                            // executed when DISMISS is clicked
+                            val intent = Intent(this@CreateCategory, CreateSubCategory::class.java)
+                            startActivity(intent)
+                        })
+                        snack.show()
+                    }
                 }
 
             }
@@ -254,6 +268,8 @@ class CreateCategory : AppCompatActivity() {
         })
 
     }
+
+
 
     fun append(arr: Array<String?>, element: String): Array<String?> {
         val array = arrayOfNulls<String?>(arr.size + 1)

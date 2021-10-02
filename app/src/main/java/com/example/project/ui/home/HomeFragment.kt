@@ -145,7 +145,7 @@ class HomeFragment : Fragment() {
         val context: Context = (activity as MainActivity?)!!.getConext()
         recycler.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = card_top_adapter(all, context, types)
+            adapter = card_top_adapter(all, context, types, listCard)
         }
 
     }
