@@ -16,7 +16,6 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.primera.content.contentClass
 import com.google.firebase.database.FirebaseDatabase
 
 

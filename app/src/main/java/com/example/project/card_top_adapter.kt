@@ -1,5 +1,6 @@
 package com.example.project
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -10,19 +11,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.core.view.isVisible
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.primera.content.contentClass
+import com.google.android.youtube.player.YouTubeStandalonePlayer
 import com.google.firebase.database.FirebaseDatabase
 
-class card_top_adapter(private val card: MutableList<contentClass>, private val context: Context?, private val type:String) : RecyclerView.Adapter<card_top_adapter.ViewHolder> () {
+class card_top_adapter(
+    private val card: MutableList<contentClass>,
+    private val context: Context?,
+    private val type: String,
+) : RecyclerView.Adapter<card_top_adapter.ViewHolder> () {
 
     private var count: Int = 0
     private lateinit var dialogMenu: AlertDialog
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.card_top, parent, false)
+
         return ViewHolder(view)
     }
 
@@ -32,9 +40,15 @@ class card_top_adapter(private val card: MutableList<contentClass>, private val 
         holder.ct.text = cards.title
         holder.ct2.text = cards.title
 
-        if (cards.type == "e7b91f56-902f-4aad-aec1-a9b859d18153") {
-            holder.videoV.isVisible = true
-            holder.videoV.setVideoURI( Uri.parse(cards.url) )
+        if (cards.typeSelect == "Video") {
+
+            if(cards.typeSelectVideo == "YouTube"){
+                holder.img.visibility = View.VISIBLE
+                Glide.with(holder.itemView.context).load(cards.saveAImg).into(holder.img);
+            }else {
+                holder.videoV.isVisible = true
+                holder.videoV.setVideoURI( Uri.parse(cards.url) )
+            }
             var running = false
             holder.videoV.setOnPreparedListener(MediaPlayer.OnPreparedListener {
                 running = true
@@ -72,6 +86,7 @@ class card_top_adapter(private val card: MutableList<contentClass>, private val 
                         .setPositiveButton("Ver") { view, _ ->
                             val intent = Intent( context, contentRepro::class.java).apply {
                                 putExtra("url", cards.url)
+                                putExtra("typeSelectedVideo", cards.typeSelectVideo)
                             }
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             context?.startActivity(intent)
@@ -107,9 +122,9 @@ class card_top_adapter(private val card: MutableList<contentClass>, private val 
 
             }else {
                 holder.cardTop.setOnClickListener {
-                    Toast.makeText(context, "Active", Toast.LENGTH_LONG).show()
                     val intent = Intent( context, contentRepro::class.java).apply {
                         putExtra("url", cards.url)
+                        putExtra("typeSelectedVideo", cards.typeSelectVideo)
                     }
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     context?.startActivity(intent)
@@ -176,7 +191,7 @@ class card_top_adapter(private val card: MutableList<contentClass>, private val 
 
             }else {
                 holder.cardTop.setOnClickListener {
-                    val intent = Intent( context, contentRepro::class.java).apply {
+                    val intent = Intent( context, contentIMG::class.java).apply {
                         putExtra("url", cards.url)
                     }
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -187,6 +202,10 @@ class card_top_adapter(private val card: MutableList<contentClass>, private val 
             }
         }
 
+    }
+
+    private fun startActivity(intent: Intent?) {
+        startActivity(intent)
     }
 
     override fun getItemCount() = card.size

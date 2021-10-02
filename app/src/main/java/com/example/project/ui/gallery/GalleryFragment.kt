@@ -5,15 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.project.MainActivity
 import com.example.project.R
 import com.example.project.databinding.FragmentGalleryBinding
 
 class GalleryFragment : Fragment() {
 
     private var _binding: FragmentGalleryBinding? = null
+    private lateinit var toolbar: androidx.appcompat.widget.Toolbar
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -26,6 +29,8 @@ class GalleryFragment : Fragment() {
     ): View? {
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        (activity as MainActivity?)!!.configToolbar()
 
         return root
     }

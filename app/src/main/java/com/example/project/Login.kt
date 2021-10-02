@@ -13,6 +13,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import com.example.project.R
 import com.example.project.databinding.ActivityLoginBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -33,6 +34,13 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        meesage = intent.getStringExtra("close").toString()
+
+        if (meesage == "close") {
+            Snackbar.make(findViewById(android.R.id.content), "Sesión cerrada", Snackbar.LENGTH_LONG)
+                .show()
+        }
 
         FirebaseApp.initializeApp(applicationContext)
 
@@ -140,7 +148,6 @@ class Login : AppCompatActivity() {
                     val intent = Intent(this, MainActivity::class.java).apply {
 
                     }
-                    Toast.makeText(this, "Sesión iniciada", Toast.LENGTH_LONG).show()
                     saveData (email, true, type)
                     startActivity(intent)
                     dialog.hide()

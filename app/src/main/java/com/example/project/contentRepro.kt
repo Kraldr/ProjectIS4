@@ -25,6 +25,7 @@ import com.google.android.youtube.player.YouTubeStandalonePlayer
 class contentRepro : AppCompatActivity() {
 
     private var meesage:String = ""
+    private var typeSVideo:String = ""
     private var uri:Uri? = null
     private lateinit var binding: ActivityContentReproBinding
     private var mPlayer: SimpleExoPlayer? = null
@@ -32,7 +33,7 @@ class contentRepro : AppCompatActivity() {
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition: Long = 0
-    val API_KEY = "AIzaSyAbqGBvxxvt7S0ghYWULLGtaNqNZm0egLM"
+    private val API_KEY = "AIzaSyAbqGBvxxvt7S0ghYWULLGtaNqNZm0egLM"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,23 +43,29 @@ class contentRepro : AppCompatActivity() {
         setContentView(binding.root)
 
         meesage = intent.getStringExtra("url").toString()
+        typeSVideo = intent.getStringExtra("typeSelectedVideo").toString()
         uri = Uri.parse(meesage)
-
         playerView = binding.exoPlayerView
-
-        val intent = YouTubeStandalonePlayer.createVideoIntent(this, API_KEY, "yWr8ZBefKzc")
-        startActivity(intent)
-
         val fullscreenButton = playerView.findViewById<ImageView>(R.id.exo_fullscreen_icon)
+        var fullscreen = true
 
-        var fullscreen = false
+        if (typeSVideo == "YouTube") {
+            val intent = YouTubeStandalonePlayer.createVideoIntent(this, API_KEY, meesage)
+            startActivity(intent)
+            finish()
+        }else {
+            if (Util.SDK_INT >= 24) {
+                playerView.visibility = View.VISIBLE
+                initPlayer()
+            }
+        }
 
         fullscreenButton.setOnClickListener {
             if (fullscreen) {
                 fullscreenButton.setImageDrawable(ContextCompat.getDrawable(
                     applicationContext,
                     R.drawable.ic_baseline_fullscreen_24
-                    )
+                )
                 )
                 window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
                 if (supportActionBar != null) {
@@ -67,9 +74,10 @@ class contentRepro : AppCompatActivity() {
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 val params = playerView.layoutParams as LinearLayout.LayoutParams
                 params.width = ViewGroup.LayoutParams.MATCH_PARENT
-                params.height = (200 * applicationContext.resources.displayMetrics.density).toInt()
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT
                 playerView.layoutParams = params
                 fullscreen = false
+                playerView.visibility = View.VISIBLE
             } else {
                 fullscreenButton.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -95,6 +103,11 @@ class contentRepro : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+        finish()
+        super.onBackPressed()
+    }
+
     private fun initPlayer() {
         mPlayer = SimpleExoPlayer.Builder(this).build()
         // Bind the player to the view.
@@ -105,21 +118,18 @@ class contentRepro : AppCompatActivity() {
         val mediaDataSourceFactory = DefaultDataSourceFactory(this, Util.getUserAgent(this, "mediaPlayerSample"))
         val mediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(Uri.parse(meesage))
 
-        //mPlayer!!.prepare(mediaSource, false, false)
+        mPlayer!!.prepare(mediaSource, false, false)
 
     }
 
     override fun onStart() {
         super.onStart()
-        if (Util.SDK_INT >= 24) {
-            initPlayer()
-        }
     }
 
     override fun onResume() {
         super.onResume()
         if (Util.SDK_INT < 24 || mPlayer == null) {
-            initPlayer()
+
         }
     }
 

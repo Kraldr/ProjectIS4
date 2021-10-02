@@ -1,17 +1,17 @@
 package com.example.project.ui.home
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.widget.EditText
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.primera.content.contentClass
+import com.example.project.contentClass
 import com.example.primera.menu.boolNotify
 import com.example.primera.menu.cardStart
 import com.example.primera.menu.card_menu_lis_adapter
@@ -20,7 +20,6 @@ import com.example.project.MainActivity
 import com.example.project.MyService
 import com.example.project.R
 import com.example.project.databinding.FragmentHomeBinding
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -37,6 +36,7 @@ class HomeFragment : Fragment() {
     private val listCard:MutableList<cardStart> = ArrayList()
     private val listCardTop:MutableList<contentClass> = ArrayList()
     private val listBool:MutableList<boolNotify> = ArrayList()
+    private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     val myRef = database.getReference("cards")
     private lateinit var item: MenuItem
 
@@ -69,6 +69,12 @@ class HomeFragment : Fragment() {
         myService.putExtra("inputExtra", "Cosa");
         requireActivity().startService(myService)
         setupBoolNotify ()
+
+        try {
+            (activity as MainActivity?)!!.configToolbar()
+        }catch (e: Exception) {
+
+        }
 
         return root
     }

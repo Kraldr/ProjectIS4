@@ -1,4 +1,4 @@
-package com.example.primera.content
+package com.example.project
 
 data class contentClass(
     val id:String = "",
@@ -8,5 +8,6 @@ data class contentClass(
     val url:String = "",
     val typeSubTitle:String = "",
     val typeSelect:String = "",
-    val typeSelectVideo:String = ""
+    val typeSelectVideo:String = "",
+    val saveAImg:String = ""
 )

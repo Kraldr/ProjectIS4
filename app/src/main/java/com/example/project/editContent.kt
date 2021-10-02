@@ -3,11 +3,8 @@ package com.example.project
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.*
-import com.example.primera.content.contentClass
 import com.example.primera.menu.cardStart
-import com.example.project.R
 import com.google.firebase.database.*
 import kotlin.collections.ArrayList
 private lateinit var dbref : DatabaseReference
