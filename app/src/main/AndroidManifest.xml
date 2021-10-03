@@ -11,6 +11,12 @@
         android:theme="@style/Theme.Project"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".allContent"
+            android:exported="true" />
+        <activity
+            android:name=".sendEmail"
+            android:exported="true" />
+        <activity
             android:name=".Subcategories"
             android:exported="true" />
         <activity

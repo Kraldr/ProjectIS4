@@ -38,11 +38,9 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:boxStrokeColor="#000"
                     app:helperTextEnabled="true"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    app:hintTextColor="#000">
+                    android:layout_marginRight="20dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/txtSearch"

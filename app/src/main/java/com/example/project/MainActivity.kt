@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -49,15 +50,19 @@ class MainActivity : AppCompatActivity() {
         type = sharedPreferences.getString("type", null).toString()
 
         supportActionBar?.elevation = 0F
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.statusBarColor = Color.WHITE;
 
         toolbar = binding.appBarMain.toolbar
         toolbar.title = ""
         binding.appBarMain.toolbar.setBackgroundColor(Color.parseColor("#FFFFFF"))
         binding.appBarMain.toolbar.title = "Title"
 
-        binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        binding.appBarMain.fab.setOnClickListener {
+            val intent = Intent( this, sendEmail::class.java).apply {
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
         }
 
 

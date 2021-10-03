@@ -1,6 +1,6 @@
 package com.example.primera.content
 
-data class subCategoryClass(
+data class subCategoriesClass(
     val id:String = "",
     val title:String = "",
     val url:String = "",

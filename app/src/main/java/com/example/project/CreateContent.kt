@@ -4,17 +4,18 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.*
-import androidx.core.content.ContextCompat.startActivity
 import com.example.primera.menu.boolNotify
 import com.example.primera.menu.cardStart
 import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
-import com.example.primera.content.subCategoryClass
+import com.example.primera.content.subCategoriesClass
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 
@@ -22,7 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 private lateinit var dbref : DatabaseReference
 private val listCard:MutableList<cardStart> = ArrayList()
 private val listTitle:MutableList<String> = ArrayList()
-private val subCategory:MutableList<subCategoryClass> = ArrayList()
+private val SUB_CATEGORIES:MutableList<subCategoriesClass> = ArrayList()
 private lateinit var dialog: Dialog
 private var adapters = arrayOf<String?>()
 private var UID = ""
@@ -50,6 +51,8 @@ class CreateCategory : AppCompatActivity() {
         UID = UUID.randomUUID().toString()
         type = findViewById<AutoCompleteTextView>(R.id.typeArchive)
         cosa = this@CreateCategory
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.statusBarColor = Color.WHITE;
 
         listIcon.add("https://cdn-icons-png.flaticon.com/512/5781/5781478.png")
         listIcon.add("https://cdn-icons-png.flaticon.com/512/5782/5782789.png")
@@ -126,15 +129,15 @@ class CreateCategory : AppCompatActivity() {
         dbref.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                subCategory.clear()
+                SUB_CATEGORIES.clear()
                 var typeSubTitle = ""
                 var typeSubID = ""
 
                 if (snapshot.exists()){
                     for (cardSnapshot in snapshot.children){
-                        val card = cardSnapshot.getValue(subCategoryClass::class.java)
+                        val card = cardSnapshot.getValue(subCategoriesClass::class.java)
                         if (card != null) {
-                            subCategory.add(card)
+                            SUB_CATEGORIES.add(card)
                         }
                     }
 
@@ -148,7 +151,7 @@ class CreateCategory : AppCompatActivity() {
                     }
 
                     var count = 0
-                    for (i in subCategory) {
+                    for (i in SUB_CATEGORIES) {
                         if (idCategory == i.category){
                             count++
                             adapters = append(adapters, i.title)
@@ -160,7 +163,7 @@ class CreateCategory : AppCompatActivity() {
                         .setTitle("Seleccione una subcategoría")
                         .setPositiveButton("Continuar") { _, _ ->
                             if (typeSubID == "") {
-                                for (i in subCategory) {
+                                for (i in SUB_CATEGORIES) {
                                     if (adapters[0] == i.title) {
                                         typeSubID = i.id
                                         typeSubTitle = i.title

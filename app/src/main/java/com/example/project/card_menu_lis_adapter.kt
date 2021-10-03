@@ -1,4 +1,4 @@
-package com.example.primera.menu
+package com.example.project
 
 import android.content.Context
 import android.content.Intent
@@ -9,8 +9,7 @@ import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.project.R
-import com.example.project.content
+import com.example.primera.menu.cardStart
 
 class card_menu_lis_adapter (private val card: MutableList<cardStart>, private val types: String, private val context: Context) : RecyclerView.Adapter<card_menu_lis_adapter.ViewHolder> () {
 
@@ -26,7 +25,7 @@ class card_menu_lis_adapter (private val card: MutableList<cardStart>, private v
 
         holder.cardActive.setOnClickListener {
             val intent = Intent( context, content::class.java).apply {
-                putExtra("Type", cards.title)
+                putExtra("Type", cards.id)
             }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)

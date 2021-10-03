@@ -10,11 +10,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.primera.content.subCategoryClass
+import com.example.primera.content.subCategoriesClass
 import com.example.primera.menu.boolNotify
 import com.example.primera.menu.cardStart
 import com.example.project.*
-import com.example.project.R
 import com.example.project.databinding.FragmentGalleryBinding
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
@@ -30,7 +29,7 @@ class GalleryFragment : Fragment() {
     private lateinit var saveEmail: String
     private val listCard:MutableList<cardStart> = ArrayList()
     private val listBool:MutableList<boolNotify> = ArrayList()
-    private val subCategory:MutableList<subCategoryClass> = ArrayList()
+    private val subCategories:MutableList<subCategoriesClass> = ArrayList()
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     val myRef = database.getReference("cards")
     private lateinit var item: MenuItem
@@ -91,20 +90,20 @@ class GalleryFragment : Fragment() {
         dbref.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                subCategory.clear()
+                subCategories.clear()
 
                 if (snapshot.exists()){
 
                     for (cardSnapshot in snapshot.children){
-                        val card = cardSnapshot.getValue(subCategoryClass::class.java)
+                        val card = cardSnapshot.getValue(subCategoriesClass::class.java)
                         if (card != null) {
-                            subCategory.add(card)
+                            subCategories.add(card)
                         }
                     }
 
                     recycler.apply {
                         layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-                        adapter = card_categories_adapter(all, type, requireActivity().applicationContext, subCategory)
+                        adapter = card_categories_adapter(all, type, requireActivity().applicationContext, subCategories)
                     }
 
                 }

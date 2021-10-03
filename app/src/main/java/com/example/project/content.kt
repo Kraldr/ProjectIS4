@@ -3,16 +3,22 @@ package com.example.project
 import android.app.Dialog
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.view.WindowManager
+import android.widget.ImageView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.primera.content.subCategoriesClass
 import com.google.firebase.database.*
 
 private lateinit var dbref : DatabaseReference
 private val listCard:MutableList<contentClass> = ArrayList()
 private var meesage:String = ""
+private val SUB_CATEGORIES:MutableList<subCategoriesClass> = ArrayList()
 private lateinit var dialog: Dialog
 private lateinit var type: String
 
@@ -23,6 +29,8 @@ class content : AppCompatActivity() {
 
         val sharedPreferences: SharedPreferences = getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
         type = sharedPreferences.getString("type", null).toString()
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.statusBarColor = Color.WHITE;
 
         meesage = intent.getStringExtra("Type").toString()
         val recycler = findViewById<RecyclerView>(R.id.recyclerContent)
@@ -50,31 +58,21 @@ class content : AppCompatActivity() {
 
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        dbref = FirebaseDatabase.getInstance().getReference("content")
-        val listCards:MutableList<contentClass> = ArrayList()
+        dbref = FirebaseDatabase.getInstance().getReference("subCategory")
         dbref.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                listCard.clear()
-                listCards.clear()
+                SUB_CATEGORIES.clear()
 
                 if (snapshot.exists()){
 
                     for (cardSnapshot in snapshot.children){
-                        val content = cardSnapshot.getValue(contentClass::class.java)
-                        if (content != null) {
-                            listCard.add(content)
+                        val card = cardSnapshot.getValue(subCategoriesClass::class.java)
+                        if (card != null) {
+                            SUB_CATEGORIES.add(card)
                         }
                     }
-
-                    for (i in listCard) {
-                        if(i.type == meesage) {
-                            listCards.add(i)
-                        }
-                    }
-
-                    datos(recyclerView, listCards)
-
+                    datos(recyclerView, SUB_CATEGORIES)
                 }
 
             }
@@ -87,10 +85,22 @@ class content : AppCompatActivity() {
 
     }
 
-    private fun datos (recycler:RecyclerView, all: MutableList<contentClass>) {
+    private fun datos (recycler:RecyclerView, all: MutableList<subCategoriesClass>) {
+        val SUB_CATEGORIES_FILTER:MutableList<subCategoriesClass> = ArrayList()
+        for (i in all) {
+            if (i.category == meesage) {
+                SUB_CATEGORIES_FILTER.add(i)
+            }
+        }
+        val noContent = findViewById<ImageView>(R.id.noContent)
+        if (SUB_CATEGORIES_FILTER.size == 0) {
+            noContent.visibility = View.VISIBLE
+        }else {
+            noContent.visibility = View.INVISIBLE
+        }
         recycler.apply {
             layoutManager = LinearLayoutManager(this@content)
-            adapter = content_lis_adapter(all,this@content, type)
+            adapter = card_subcategories_adapter(SUB_CATEGORIES_FILTER,type, this@content, meesage)
         }
 
         recycler.layoutManager = GridLayoutManager(this, 1)

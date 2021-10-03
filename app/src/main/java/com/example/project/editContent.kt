@@ -1,15 +1,14 @@
 package com.example.project
 
 import android.app.Dialog
-import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
+import android.view.WindowManager
 import android.widget.*
-import com.example.primera.content.subCategoryClass
+import com.example.primera.content.subCategoriesClass
 import com.example.primera.menu.cardStart
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -17,7 +16,7 @@ private lateinit var dbref : DatabaseReference
 private val listCard:MutableList<cardStart> = ArrayList()
 private val list:MutableList<contentClass> = ArrayList()
 private val listTitle:MutableList<String> = ArrayList()
-private val subCategory:MutableList<subCategoryClass> = ArrayList()
+private val SUB_CATEGORIES:MutableList<subCategoriesClass> = ArrayList()
 private var adapters = arrayOf<String?>()
 private lateinit var dialog: Dialog
 private var meesage:String = ""
@@ -41,6 +40,8 @@ class editContent : AppCompatActivity() {
         txtDescrp = findViewById<EditText>(R.id.txtDescrips)
         UID = UUID.randomUUID().toString()
         typeAuto = findViewById<AutoCompleteTextView>(R.id.typeArchive)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.statusBarColor = Color.WHITE;
 
 
         setupRecyclerView()
@@ -87,15 +88,15 @@ class editContent : AppCompatActivity() {
         dbref.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                subCategory.clear()
+                SUB_CATEGORIES.clear()
                 var typeSubTitle = ""
                 var typeSubID:String? = ""
 
                 if (snapshot.exists()){
                     for (cardSnapshot in snapshot.children){
-                        val card = cardSnapshot.getValue(subCategoryClass::class.java)
+                        val card = cardSnapshot.getValue(subCategoriesClass::class.java)
                         if (card != null) {
-                            subCategory.add(card)
+                            SUB_CATEGORIES.add(card)
                         }
                     }
 
@@ -134,7 +135,7 @@ class editContent : AppCompatActivity() {
                     }
 
                     var count = 0
-                    for (i in subCategory) {
+                    for (i in SUB_CATEGORIES) {
                         if (typeID == i.category){
                             count++
                             adapters = append(adapters, i.title)
@@ -174,7 +175,7 @@ class editContent : AppCompatActivity() {
                                 typeSelectSub = adapters[0]
                             }
 
-                            for (i in subCategory){
+                            for (i in SUB_CATEGORIES){
                                 if (i.title == typeSelectSub) {
                                     typeSubID = i.id
                                     typeSubTitle = i.title

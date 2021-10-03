@@ -2,19 +2,16 @@ package com.example.project
 
 import android.app.Dialog
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.view.WindowManager
 import android.widget.*
-import androidx.recyclerview.widget.ListAdapter
-import com.example.primera.content.subCategoryClass
+import com.example.primera.content.subCategoriesClass
 import com.example.primera.menu.cardStart
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.database.*
-import kotlinx.coroutines.NonCancellable.cancel
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -39,6 +36,8 @@ class CreateSubCategory : AppCompatActivity() {
         val adapters = ArrayAdapter(applicationContext, R.layout.list_item, list)
         val text = findViewById<AutoCompleteTextView>(R.id.typeCategory)
         text.setAdapter(adapters)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.statusBarColor = Color.WHITE;
 
         txtUID.setText(uniqueID)
 
@@ -107,7 +106,7 @@ class CreateSubCategory : AppCompatActivity() {
 
 
         val database = FirebaseDatabase.getInstance().getReference("subCategory")
-        val subCategoryClass = subCategoryClass(UID, txtTitle.text.toString(), txtUrl.text.toString(), type)
+        val subCategoryClass = subCategoriesClass(UID, txtTitle.text.toString(), txtUrl.text.toString(), type)
         database.child(UID).setValue(subCategoryClass).addOnSuccessListener {
             Toast.makeText(this, "Subcategoría creada correctamente", Toast.LENGTH_LONG).show()
             dialog.hide()

@@ -1,6 +1,5 @@
 package com.example.project.ui.home
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -14,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.project.contentClass
 import com.example.primera.menu.boolNotify
 import com.example.primera.menu.cardStart
-import com.example.primera.menu.card_menu_lis_adapter
+import com.example.project.card_menu_lis_adapter
 import com.example.project.card_top_adapter
 import com.example.project.MainActivity
 import com.example.project.MyService
