@@ -5,6 +5,7 @@
     android:layout_height="90dp"
     app:cardCornerRadius="5dp"
     app:cardElevation="10dp"
+    android:layout_marginTop="10dp"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
     android:background="#ffff"
@@ -30,13 +31,14 @@
                 android:visibility="invisible"
                 android:layout_height="60dp"
                 android:src="@drawable/ic_baseline_person_24black"/>
+
             <VideoView
                 android:id="@+id/videoView"
-                android:layout_centerInParent="true"
                 android:layout_width="60dp"
-                android:visibility="invisible"
                 android:layout_height="60dp"
-                android:src="@drawable/ic_baseline_person_24black"/>
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_baseline_person_24black"
+                android:visibility="invisible" />
 
         </RelativeLayout>
 
@@ -44,13 +46,13 @@
             android:id="@+id/ct"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/deltaRelative"
             android:text="Title"
-            android:textStyle="bold"
             android:textColor="#1C1C1C"
             android:textSize="20dp"
-            android:layout_toRightOf="@id/deltaRelative"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="5dp"/>
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"

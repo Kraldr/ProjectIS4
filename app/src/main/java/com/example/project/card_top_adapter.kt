@@ -210,9 +210,6 @@ class card_top_adapter(
 
     }
 
-    private fun startActivity(intent: Intent?) {
-        startActivity(intent)
-    }
 
     override fun getItemCount() = card.size
 

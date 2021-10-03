@@ -1,22 +1,39 @@
 package com.example.project.ui.gallery
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.example.project.MainActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.primera.content.subCategoryClass
+import com.example.primera.menu.boolNotify
+import com.example.primera.menu.cardStart
+import com.example.project.*
 import com.example.project.R
 import com.example.project.databinding.FragmentGalleryBinding
+import com.google.firebase.database.*
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 class GalleryFragment : Fragment() {
 
     private var _binding: FragmentGalleryBinding? = null
+    private val database = Firebase.database
+    private lateinit var dbref : DatabaseReference
+    private lateinit var messagesListener: ValueEventListener
+    private lateinit var type: String
+    private lateinit var saveEmail: String
+    private val listCard:MutableList<cardStart> = ArrayList()
+    private val listBool:MutableList<boolNotify> = ArrayList()
+    private val subCategory:MutableList<subCategoryClass> = ArrayList()
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
+    val myRef = database.getReference("cards")
+    private lateinit var item: MenuItem
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -31,8 +48,75 @@ class GalleryFragment : Fragment() {
         val root: View = binding.root
 
         (activity as MainActivity?)!!.configToolbar()
+        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
+        type = sharedPreferences.getString("type", null).toString()
+        setupRecyclerView(binding.listRecyclerTop)
 
         return root
+    }
+
+    private fun setupRecyclerView(recyclerView: RecyclerView) {
+        dbref = FirebaseDatabase.getInstance().getReference("ArchiType")
+        dbref.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                listCard.clear()
+
+                if (snapshot.exists()){
+
+                    for (cardSnapshot in snapshot.children){
+                        val card = cardSnapshot.getValue(cardStart::class.java)
+                        if (card != null) {
+                            listCard.add(card)
+                        }
+                    }
+
+                    datos(recyclerView, listCard)
+
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+
+    }
+
+
+    private fun datos (recycler:RecyclerView, all: MutableList<cardStart>) {
+        dbref = FirebaseDatabase.getInstance().getReference("subCategory")
+        dbref.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                subCategory.clear()
+
+                if (snapshot.exists()){
+
+                    for (cardSnapshot in snapshot.children){
+                        val card = cardSnapshot.getValue(subCategoryClass::class.java)
+                        if (card != null) {
+                            subCategory.add(card)
+                        }
+                    }
+
+                    recycler.apply {
+                        layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+                        adapter = card_categories_adapter(all, type, requireActivity().applicationContext, subCategory)
+                    }
+
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+
     }
 
     override fun onDestroyView() {

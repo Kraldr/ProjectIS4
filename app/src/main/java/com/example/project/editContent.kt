@@ -49,7 +49,6 @@ class editContent : AppCompatActivity() {
 
 
         btnActualizar.setOnClickListener {
-            //loadSesion()
             setupArchiType()
         }
 
@@ -295,12 +294,6 @@ class editContent : AppCompatActivity() {
 
     }
 
-    fun remove(arr: Array<String?>): Array<String?> {
-        val array = arrayOfNulls<String?>(arr.size - 1)
-        System.arraycopy(arr, 0, array, 0, arr.size)
-        return array
-    }
-
     fun append(arr: Array<String?>, element: String): Array<String?> {
         val array = arrayOfNulls<String?>(arr.size + 1)
         System.arraycopy(arr, 0, array, 0, arr.size)
@@ -338,9 +331,9 @@ class editContent : AppCompatActivity() {
     }
 
     private fun datos(listCard: MutableList<contentClass>) {
-        var txtTitle = findViewById<EditText>(R.id.txtTitle)
-        var txtIMG = findViewById<EditText>(R.id.txtIMG)
-        var txtDescrp = findViewById<EditText>(R.id.txtDescrips)
+        val txtTitle = findViewById<EditText>(R.id.txtTitle)
+        val txtIMG = findViewById<EditText>(R.id.txtIMG)
+        val txtDescrp = findViewById<EditText>(R.id.txtDescrips)
 
         for (i in listCard) {
             if (i.id == meesage) {

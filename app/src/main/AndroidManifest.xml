@@ -11,6 +11,9 @@
         android:theme="@style/Theme.Project"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Subcategories"
+            android:exported="true" />
+        <activity
             android:name=".CreateSubCategory"
             android:exported="true" />
         <activity
