@@ -6,19 +6,19 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.project.contentClass
 import com.example.primera.menu.boolNotify
 import com.example.primera.menu.cardStart
-import com.example.project.card_menu_lis_adapter
-import com.example.project.card_top_adapter
-import com.example.project.MainActivity
-import com.example.project.MyService
+import com.example.project.*
 import com.example.project.R
 import com.example.project.databinding.FragmentHomeBinding
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.youtube.player.internal.e
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -55,21 +55,52 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
-        saveEmail = sharedPreferences.getString("correo", null).toString()
-        type = sharedPreferences.getString("type", null).toString()
-        val recycler = root.findViewById<RecyclerView>(R.id.listRecycler)
-        val recyclerTop = root.findViewById<RecyclerView>(R.id.listRecyclerTop)
-        setupRecyclerView(recycler)
-        setupRecyclerViewTop(recyclerTop)
-
-
-        val myService = Intent(requireActivity().applicationContext, MyService::class.java)
-        myService.putExtra("inputExtra", "Cosa");
-        requireActivity().startService(myService)
-        setupBoolNotify ()
-
         try {
+            val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
+            saveEmail = sharedPreferences.getString("correo", null).toString()
+            type = sharedPreferences.getString("type", null).toString()
+            val recycler = root.findViewById<RecyclerView>(R.id.listRecycler)
+            val recyclerTop = root.findViewById<RecyclerView>(R.id.listRecyclerTop)
+            val txtSearch = root.findViewById<EditText>(R.id.txtSearch)
+            setupRecyclerView(recycler)
+            setupRecyclerViewTop(recyclerTop)
+
+            txtSearch.isFocusableInTouchMode = true
+            txtSearch.requestFocus()
+
+            txtSearch.setOnKeyListener { _, keyCode, event ->
+
+                when {
+
+                    //Check if it is the Enter-Key,      Check if the Enter Key was pressed down
+                    ((keyCode == KeyEvent.KEYCODE_ENTER) && (event.action == KeyEvent.ACTION_DOWN)) -> {
+
+
+                        if (txtSearch.text.toString().isNotEmpty()) {
+                            val intent = Intent( context, Search::class.java).apply {
+                                putExtra("contentSearch", txtSearch.text.toString())
+                            }
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                        }else {
+                            Toast.makeText(requireContext(), "Este campo no puede ser vacio", Toast.LENGTH_SHORT).show()
+                        }
+
+                        //return true
+                        return@setOnKeyListener true
+                    }
+                    else -> false
+                }
+
+
+            }
+
+
+            val myService = Intent(requireActivity().applicationContext, MyService::class.java)
+            myService.putExtra("inputExtra", "Cosa");
+            requireActivity().startService(myService)
+            setupBoolNotify ()
+
             (activity as MainActivity?)!!.configToolbar()
         }catch (e: Exception) {
 

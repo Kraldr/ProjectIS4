@@ -2,6 +2,7 @@ package com.example.project
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -28,38 +29,42 @@ class CreateSubCategory : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_sub_category)
 
-        var uniqueID = UUID.randomUUID().toString()
+        try {
+            var uniqueID = UUID.randomUUID().toString()
 
-        var txtUID = findViewById<EditText>(R.id.txtIDType)
-        var btnSubir = findViewById<Button>(R.id.btnRegistrar)
-        val list = resources.getStringArray(R.array.typeCategory)
-        val adapters = ArrayAdapter(applicationContext, R.layout.list_item, list)
-        val text = findViewById<AutoCompleteTextView>(R.id.typeCategory)
-        text.setAdapter(adapters)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.statusBarColor = Color.WHITE;
+            var txtUID = findViewById<EditText>(R.id.txtIDType)
+            var btnSubir = findViewById<Button>(R.id.btnRegistrar)
+            val list = resources.getStringArray(R.array.typeCategory)
+            val adapters = ArrayAdapter(applicationContext, R.layout.list_item, list)
+            val text = findViewById<AutoCompleteTextView>(R.id.typeCategory)
+            text.setAdapter(adapters)
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.statusBarColor = Color.WHITE;
 
-        txtUID.setText(uniqueID)
+            txtUID.setText(uniqueID)
 
-        btnSubir.setOnClickListener {
-            loadSesion()
-            var txtTitle = findViewById<EditText>(R.id.txtTitle)
-            var txtUrl = findViewById<EditText>(R.id.txtURLI)
-            var txtTypeCategory = findViewById<EditText>(R.id.typeCategory)
+            btnSubir.setOnClickListener {
+                loadSesion()
+                var txtTitle = findViewById<EditText>(R.id.txtTitle)
+                var txtUrl = findViewById<EditText>(R.id.txtURLI)
+                var txtTypeCategory = findViewById<EditText>(R.id.typeCategory)
 
-            if (txtTitle.text.toString() == ""){
+                if (txtTitle.text.toString() == ""){
 
-            }else if(txtUrl.text.toString() == "") {
+                }else if(txtUrl.text.toString() == "") {
 
-            }else if(txtTypeCategory.text.toString() == "") {
+                }else if(txtTypeCategory.text.toString() == "") {
 
-            }else{
-                if (txtTypeCategory.text.toString() == "Categoría") {
-                    crearType()
-                }else if (txtTypeCategory.text.toString() == "Subcategoría"){
-                    setupArchiType()
+                }else{
+                    if (txtTypeCategory.text.toString() == "Categoría") {
+                        crearType()
+                    }else if (txtTypeCategory.text.toString() == "Subcategoría"){
+                        setupArchiType()
+                    }
                 }
             }
+        }catch (e: Exception) {
+
         }
     }
 

@@ -40,46 +40,50 @@ class CreateCategory : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_category)
 
-        var btnCrearTipo = findViewById<Button>(R.id.btnCrearTipo)
-        var btnRegistro = findViewById<Button>(R.id.btnRegistro)
+        try {
+            var btnCrearTipo = findViewById<Button>(R.id.btnCrearTipo)
+            var btnRegistro = findViewById<Button>(R.id.btnRegistro)
 
-        setupRecyclerView()
+            setupRecyclerView()
 
-        txtTitle = findViewById<EditText>(R.id.txtTitle)
-        txtIMG = findViewById<EditText>(R.id.txtIMG)
-        txtDescrp = findViewById<EditText>(R.id.txtDescrips)
-        UID = UUID.randomUUID().toString()
-        type = findViewById<AutoCompleteTextView>(R.id.typeArchive)
-        cosa = this@CreateCategory
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.statusBarColor = Color.WHITE;
+            txtTitle = findViewById<EditText>(R.id.txtTitle)
+            txtIMG = findViewById<EditText>(R.id.txtIMG)
+            txtDescrp = findViewById<EditText>(R.id.txtDescrips)
+            UID = UUID.randomUUID().toString()
+            type = findViewById<AutoCompleteTextView>(R.id.typeArchive)
+            cosa = this@CreateCategory
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.statusBarColor = Color.WHITE;
 
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/5781/5781478.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/5782/5782789.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/4256/4256900.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/1043/1043445.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/550/550638.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/893/893097.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/755/755195.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/5783/5783071.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/5778/5778950.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/584/584026.png")
-        listIcon.add("https://cdn-icons-png.flaticon.com/512/584/584056.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/5781/5781478.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/5782/5782789.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/4256/4256900.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/1043/1043445.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/550/550638.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/893/893097.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/755/755195.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/5783/5783071.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/5778/5778950.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/584/584026.png")
+            listIcon.add("https://cdn-icons-png.flaticon.com/512/584/584056.png")
 
 
-        btnCrearTipo.setOnClickListener {
-            val intent = Intent(this, CreateSubCategory::class.java)
-            startActivity(intent)
+            btnCrearTipo.setOnClickListener {
+                val intent = Intent(this, CreateSubCategory::class.java)
+                startActivity(intent)
 
-        }
-
-        btnRegistro.setOnClickListener {
-            if (txtIMG.text.toString().contains("http") || txtIMG.text.toString().contains("https://youtu.be/") || txtIMG.text.toString().contains("https://www.youtube.com/")) {
-                setupArchiType()
-            }else {
-                Snackbar.make(findViewById(android.R.id.content), "Por favor verifica la url", Snackbar.LENGTH_LONG)
-                    .show()
             }
+
+            btnRegistro.setOnClickListener {
+                if (txtIMG.text.toString().contains("http") || txtIMG.text.toString().contains("https://youtu.be/") || txtIMG.text.toString().contains("https://www.youtube.com/")) {
+                    setupArchiType()
+                }else {
+                    Snackbar.make(findViewById(android.R.id.content), "Por favor verifica la url", Snackbar.LENGTH_LONG)
+                        .show()
+                }
+
+            }
+        }catch (e:Exception) {
 
         }
 

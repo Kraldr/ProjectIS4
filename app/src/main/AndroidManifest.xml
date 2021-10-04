@@ -11,6 +11,9 @@
         android:theme="@style/Theme.Project"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Search"
+            android:exported="true" />
+        <activity
             android:name=".allContent"
             android:exported="true" />
         <activity

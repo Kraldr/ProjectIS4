@@ -2,14 +2,18 @@ package com.example.project
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -33,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var type: String
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
+
+
 
     @SuppressLint("RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,10 +65,13 @@ class MainActivity : AppCompatActivity() {
         binding.appBarMain.toolbar.title = "Title"
 
         binding.appBarMain.fab.setOnClickListener {
-            val intent = Intent( this, sendEmail::class.java).apply {
+            sendMail()
+            /*val intent = Intent( this, sendEmail::class.java).apply {
             }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
+            startActivity(intent)*/
+
+
         }
 
 
@@ -85,6 +94,12 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         configToolbar()
+    }
+
+    private fun sendMail() {
+        //Send Mail
+        val javaMailAPI = JavaMailAPI(this, "amedina588@soyudemedellin.edu.co", "Prueba sub", "Prueba mesa")
+        javaMailAPI.execute()
     }
 
 
@@ -155,6 +170,7 @@ class MainActivity : AppCompatActivity() {
     fun getConext (): Context {
         return this@MainActivity
     }
+
 
 
 }

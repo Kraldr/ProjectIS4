@@ -11,7 +11,7 @@
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Categorias" />
+            android:title="Categorías" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_baseline_person_24black"

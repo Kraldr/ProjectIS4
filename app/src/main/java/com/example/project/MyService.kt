@@ -143,7 +143,6 @@ class MyService: Service() {
     }
 
     override fun onDestroy() {
-        Toast.makeText(this, "Service stopped...", Toast.LENGTH_SHORT).show()
         Log.i(TAG, "onCreate() , service stopped...")
     }
 

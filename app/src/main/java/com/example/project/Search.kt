@@ -7,7 +7,6 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.primera.content.subCategoriesClass
@@ -24,10 +23,10 @@ private val listCategorie:MutableList<cardStart> = ArrayList()
 private lateinit var dialog: Dialog
 private lateinit var type: String
 
-class allContent : AppCompatActivity() {
+class Search : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_all_content)
+        setContentView(R.layout.activity_search)
         try {
             supportActionBar!!.hide()
         }catch (e:Exception) {
@@ -38,10 +37,8 @@ class allContent : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.statusBarColor = Color.WHITE;
 
-        meesage = intent.getStringExtra("Type").toString()
-        submeesage = intent.getStringExtra("subType").toString()
-
-        val recycler = findViewById<RecyclerView>(R.id.listRecyclerAll)
+        meesage = intent.getStringExtra("contentSearch").toString()
+        val recycler = findViewById<RecyclerView>(R.id.listRecyclerSearch)
 
 
         setupRecyclerView(recycler)
@@ -77,7 +74,7 @@ class allContent : AppCompatActivity() {
 
     }
 
-    private fun datosTop (recycler:RecyclerView, all: MutableList<contentClass>) {
+    private fun datosTop (recycler: RecyclerView, all: MutableList<contentClass>) {
 
         dbref = FirebaseDatabase.getInstance().getReference("subCategory")
         dbref.addValueEventListener(object : ValueEventListener {
@@ -108,19 +105,51 @@ class allContent : AppCompatActivity() {
                                     }
                                 }
 
-                                val listCar_Filter:MutableList<contentClass> = ArrayList()
+                                val listCardTop_FILTER:MutableList<contentClass> = ArrayList()
 
                                 for (i in all) {
-                                    if (i.typeSubTitle == submeesage){
-                                        listCar_Filter.add(i)
+                                    if (i.title.uppercase().contains(meesage.uppercase())) {
+                                        listCardTop_FILTER.add(i)
+                                    }
+
+                                    if (i.typeSelect.uppercase().contains(meesage.uppercase()) && !listCardTop_FILTER.contains(i)) {
+                                        listCardTop_FILTER.add(i)
+                                    }
+
+                                    if (i.descrip.uppercase().contains(meesage.uppercase()) && !listCardTop_FILTER.contains(i)) {
+                                        listCardTop_FILTER.add(i)
+                                    }
+                                }
+
+                                for (i in listCard) {
+                                    if (i.title.uppercase().contains(meesage.uppercase())) {
+                                        for (j in all) {
+                                            if (j.type == i.id) {
+                                                if (!listCardTop_FILTER.contains(j)) {
+                                                    listCardTop_FILTER.add(j)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                for (i in SUB_CATEGORIES) {
+                                    if (i.title.uppercase().contains(meesage.uppercase())) {
+                                        for (j in all) {
+                                            if (j.typeSubTitle == i.id) {
+                                                if (!listCardTop_FILTER.contains(j)) {
+                                                    listCardTop_FILTER.add(j)
+                                                }
+                                            }
+                                        }
                                     }
                                 }
 
                                 val sharedPreferences: SharedPreferences = getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
                                 val types = sharedPreferences.getString("type", null).toString()
                                 recycler.apply {
-                                    layoutManager = LinearLayoutManager(this@allContent)
-                                    adapter = card_allcontent_adapter(listCar_Filter, this@allContent, types, SUB_CATEGORIES, listCard)
+                                    layoutManager = LinearLayoutManager(this@Search)
+                                    adapter = card_search_adapter(listCardTop_FILTER, this@Search, types, SUB_CATEGORIES, listCard, meesage)
                                 }
 
                             }

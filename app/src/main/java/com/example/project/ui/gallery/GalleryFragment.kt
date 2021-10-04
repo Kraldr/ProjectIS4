@@ -46,10 +46,14 @@ class GalleryFragment : Fragment() {
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        (activity as MainActivity?)!!.configToolbar()
-        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
-        type = sharedPreferences.getString("type", null).toString()
-        setupRecyclerView(binding.listRecyclerTop)
+        try {
+            (activity as MainActivity?)!!.configToolbar()
+            val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("sharedPreference", Context.MODE_PRIVATE)
+            type = sharedPreferences.getString("type", null).toString()
+            setupRecyclerView(binding.listRecyclerTop)
+        }catch (e:Exception) {
+
+        }
 
         return root
     }

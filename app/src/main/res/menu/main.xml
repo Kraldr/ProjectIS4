@@ -8,12 +8,6 @@
         app:showAsAction="ifRoom"
         />
 
-    <item
-        android:id="@+id/notification"
-        android:title="Item"
-        android:icon="@drawable/ic_baseline_notifications_24"
-        app:showAsAction="ifRoom"
-        />
 
     <item
         android:id="@+id/disconnect"

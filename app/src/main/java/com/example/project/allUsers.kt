@@ -8,6 +8,7 @@ data class allUsers(
     val lastname: String = "",
     val cel: String = "",
     val type: String = "",
-    val dateUpdate: Boolean = false
+    val dateUpdate: Boolean = false,
+    val contentNoti: String = ""
 
 )
