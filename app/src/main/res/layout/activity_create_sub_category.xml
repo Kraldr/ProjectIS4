@@ -104,7 +104,41 @@
             android:background="@drawable/ic_buttom"
             android:paddingLeft="64dp"
             android:paddingRight="64dp"
-            android:text="Registrar tipo de archivo"
+            android:text="Registrar"
+            android:textColor="@color/white" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="24dp"
+            app:helperTextEnabled="true"
+            app:helperText="New text"
+            app:startIconDrawable="@drawable/ic_baseline_style_24"
+            app:startIconContentDescription="Info Icon"
+            app:errorEnabled="true"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_height="wrap_content">
+
+            <AutoCompleteTextView
+                android:id="@+id/typeDelete"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:hint="Seleccione una opción"
+                android:layout_height="wrap_content"
+                android:inputType="none" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/ic_buttom"
+            android:paddingLeft="64dp"
+            android:paddingRight="64dp"
+            android:text="Eliminar"
             android:textColor="@color/white" />
 
 

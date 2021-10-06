@@ -22,4 +22,10 @@
         <item>Subcategoría</item>
     </string-array>
 
+    <string-array name="typeProp">
+        <item>Retos o Propuestas</item>
+        <item>Dudas</item>
+    </string-array>
+
+
 </resources>

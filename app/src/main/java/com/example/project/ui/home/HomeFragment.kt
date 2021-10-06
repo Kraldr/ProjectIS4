@@ -181,12 +181,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun datos (recycler:RecyclerView, all: MutableList<cardStart>) {
-        recycler.apply {
-            layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-            adapter = card_menu_lis_adapter(all, type, requireActivity().applicationContext)
-        }
+        try {
+            recycler.apply {
+                layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+                adapter = card_menu_lis_adapter(all, type, requireActivity().applicationContext)
+            }
 
-        recycler.layoutManager = LinearLayoutManager(requireActivity().applicationContext, RecyclerView.HORIZONTAL,false)
+            recycler.layoutManager = LinearLayoutManager(requireActivity().applicationContext, RecyclerView.HORIZONTAL,false)
+        }catch (e:Exception) {
+
+        }
     }
 
 

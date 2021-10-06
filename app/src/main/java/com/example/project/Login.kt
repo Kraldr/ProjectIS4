@@ -103,6 +103,7 @@ class Login : AppCompatActivity() {
                                 val editor = sharedPreferences.edit()
                                 editor.apply {
                                     putString("type", type)
+                                    putString("name", user.name)
                                     putString("key", user.key)
                                 }.apply()
                             }

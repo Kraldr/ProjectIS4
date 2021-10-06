@@ -9,9 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.*
+import androidx.recyclerview.widget.RecyclerView
 import com.example.primera.content.subCategoriesClass
 import com.example.primera.menu.cardStart
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.*
 import java.util.*
 import kotlin.collections.ArrayList
@@ -23,6 +25,11 @@ private lateinit var dbref : DatabaseReference
 private val listCard:MutableList<cardStart> = ArrayList()
 private var adapters = arrayOf<String?>()
 private val listTitle:MutableList<String> = ArrayList()
+private lateinit var categories:AutoCompleteTextView
+private var subCa: String? = ""
+private var CaID: String? = ""
+private val SUB_CATEGORIES:MutableList<subCategoriesClass> = ArrayList()
+private val listCardTop:MutableList<contentClass> = ArrayList()
 
 class CreateSubCategory : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +41,7 @@ class CreateSubCategory : AppCompatActivity() {
 
             var txtUID = findViewById<EditText>(R.id.txtIDType)
             var btnSubir = findViewById<Button>(R.id.btnRegistrar)
+            var btnDelete = findViewById<Button>(R.id.btnDelete)
             val list = resources.getStringArray(R.array.typeCategory)
             val adapters = ArrayAdapter(applicationContext, R.layout.list_item, list)
             val text = findViewById<AutoCompleteTextView>(R.id.typeCategory)
@@ -43,22 +51,29 @@ class CreateSubCategory : AppCompatActivity() {
 
             txtUID.setText(uniqueID)
 
+            setupArchiTypeRecy()
+
+            btnDelete.setOnClickListener {
+                setupRecyclerSub()
+            }
+
             btnSubir.setOnClickListener {
-                loadSesion()
                 var txtTitle = findViewById<EditText>(R.id.txtTitle)
                 var txtUrl = findViewById<EditText>(R.id.txtURLI)
                 var txtTypeCategory = findViewById<EditText>(R.id.typeCategory)
 
                 if (txtTitle.text.toString() == ""){
-
-                }else if(txtUrl.text.toString() == "") {
-
+                    Snackbar.make(findViewById(android.R.id.content), "El título no puede ser vacío", Snackbar.LENGTH_LONG)
+                        .show()
                 }else if(txtTypeCategory.text.toString() == "") {
-
+                    Snackbar.make(findViewById(android.R.id.content), "El tipo no puede ser vacío", Snackbar.LENGTH_LONG)
+                        .show()
                 }else{
                     if (txtTypeCategory.text.toString() == "Categoría") {
+                        loadSesion()
                         crearType()
                     }else if (txtTypeCategory.text.toString() == "Subcategoría"){
+                        loadSesion()
                         setupArchiType()
                     }
                 }
@@ -97,7 +112,7 @@ class CreateSubCategory : AppCompatActivity() {
         val database = FirebaseDatabase.getInstance().getReference("ArchiType")
         val cards = cardStart(UID, txtTitle.text.toString(), txtUrl.text.toString())
         database.child(UID).setValue(cards).addOnSuccessListener {
-            Toast.makeText(this, "Tipo de arcivo creado correctamente", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Categoría creada correctamente", Toast.LENGTH_LONG).show()
             dialog.hide()
             finish()
         }
@@ -132,6 +147,10 @@ class CreateSubCategory : AppCompatActivity() {
                         val card = cardSnapshot.getValue(cardStart::class.java)
                         if (card != null) {
                             listCard.add(card)
+                            listTitle.clear()
+                            for (i in listCard) {
+                                listTitle.add(i.title)
+                            }
                         }
                     }
 
@@ -159,7 +178,7 @@ class CreateSubCategory : AppCompatActivity() {
                                     type = i.id
                                 }
                             }
-                        }.setCancelable(false).show()
+                        }.setCancelable(true).show()
 
 
                 }
@@ -171,6 +190,231 @@ class CreateSubCategory : AppCompatActivity() {
             }
 
         })
+
+    }
+
+    private fun setupArchiTypeRecy() {
+        dbref = FirebaseDatabase.getInstance().getReference("ArchiType")
+        dbref.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                listCard.clear()
+
+                if (snapshot.exists()){
+                    for (cardSnapshot in snapshot.children){
+                        val card = cardSnapshot.getValue(cardStart::class.java)
+                        if (card != null) {
+                            listCard.add(card)
+                            listTitle.clear()
+                            for (i in listCard) {
+                                listTitle.add(i.title)
+                            }
+                            val adapters = ArrayAdapter(applicationContext, R.layout.list_item, listTitle)
+                            categories = findViewById<AutoCompleteTextView>(R.id.typeDelete)
+                            categories.setAdapter(adapters)
+                        }
+                    }
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
+
+    }
+
+    private fun setupRecyclerSub() {
+        try {
+            if (categories.text.toString().isNotEmpty()){
+                dbref = FirebaseDatabase.getInstance().getReference("subCategory")
+                dbref.addValueEventListener(object : ValueEventListener {
+
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        SUB_CATEGORIES.clear()
+
+                        if (snapshot.exists()){
+
+                            for (cardSnapshot in snapshot.children){
+                                val card = cardSnapshot.getValue(subCategoriesClass::class.java)
+                                if (card != null) {
+                                    SUB_CATEGORIES.add(card)
+                                }
+                            }
+
+                            dbref = FirebaseDatabase.getInstance().getReference("ArchiType")
+                            dbref.addValueEventListener(object : ValueEventListener {
+
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    listCard.clear()
+
+                                    if (snapshot.exists()){
+
+                                        for (cardSnapshot in snapshot.children){
+                                            val card = cardSnapshot.getValue(cardStart::class.java)
+                                            if (card != null) {
+                                                listCard.add(card)
+                                            }
+                                        }
+
+                                        var adapters = arrayOf<String?>()
+                                        adapters = arrayOf()
+
+                                        for (i in listCard) {
+                                            if (i.title == categories.text.toString() && categories.text.toString()
+                                                    .isNotEmpty()) {
+                                                CaID = i.id
+                                                for (j in SUB_CATEGORIES) {
+                                                    if (j.category == i.id) {
+                                                        adapters = append(adapters, j.title)
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        adapters = append(adapters, "Sin subcategoría")
+
+                                        MaterialAlertDialogBuilder(this@CreateSubCategory)
+                                            .setTitle("Seleccione el tipo de arhivo")
+                                            .setPositiveButton("Continuar") { _, _ ->
+                                                if (subCa!!.isEmpty()) {
+                                                    subCa = adapters[0]
+                                                }
+
+                                                if (subCa == "Sin subcategoría"){
+                                                    for (i in listCard) {
+                                                        if (i.id == CaID) {
+                                                            for (j in SUB_CATEGORIES) {
+                                                                if (j.category == i.id) {
+                                                                    val database = FirebaseDatabase.getInstance().reference.child("subCategory").child(
+                                                                        j.id
+                                                                    );
+                                                                    database.removeValue();
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    val database = FirebaseDatabase.getInstance().reference.child("ArchiType").child(CaID!!);
+                                                    database.removeValue();
+
+                                                    dbref = FirebaseDatabase.getInstance().getReference("content")
+                                                    dbref.addValueEventListener(object : ValueEventListener {
+
+                                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                                            listCardTop.clear()
+
+                                                            if (snapshot.exists()){
+
+                                                                for (cardSnapshot in snapshot.children){
+                                                                    val content = cardSnapshot.getValue(contentClass::class.java)
+                                                                    if (content != null) {
+                                                                        listCardTop.add(content)
+                                                                    }
+                                                                }
+
+                                                                for (j in listCardTop) {
+                                                                    if (j.type == CaID) {
+                                                                        val database = FirebaseDatabase.getInstance().reference.child("content").child(
+                                                                            j.id
+                                                                        );
+                                                                        database.removeValue();
+                                                                    }
+                                                                }
+
+                                                            }
+
+                                                        }
+
+                                                        override fun onCancelled(error: DatabaseError) {
+                                                            TODO("Not yet implemented")
+                                                        }
+
+                                                    })
+                                                    Toast.makeText(applicationContext, "Eliminado", Toast.LENGTH_LONG).show()
+                                                    finish()
+
+                                                }else {
+                                                    var subcaID = ""
+                                                    for (j in SUB_CATEGORIES) {
+                                                        if (subCa == j.title) {
+                                                            subcaID = j.id
+                                                            val database = FirebaseDatabase.getInstance().reference.child("subCategory").child(
+                                                                j.id
+                                                            );
+                                                            database.removeValue();
+                                                        }
+                                                    }
+
+                                                    dbref = FirebaseDatabase.getInstance().getReference("content")
+                                                    dbref.addValueEventListener(object : ValueEventListener {
+
+                                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                                            listCardTop.clear()
+
+                                                            if (snapshot.exists()){
+
+                                                                for (cardSnapshot in snapshot.children){
+                                                                    val content = cardSnapshot.getValue(contentClass::class.java)
+                                                                    if (content != null) {
+                                                                        listCardTop.add(content)
+                                                                    }
+                                                                }
+
+                                                                for (j in listCardTop) {
+                                                                    if (j.typeSubTitle == subcaID) {
+                                                                        val database = FirebaseDatabase.getInstance().reference.child("content").child(
+                                                                            j.id
+                                                                        );
+                                                                        database.removeValue();
+                                                                    }
+                                                                }
+
+                                                            }
+
+                                                        }
+
+                                                        override fun onCancelled(error: DatabaseError) {
+                                                            TODO("Not yet implemented")
+                                                        }
+
+                                                    })
+                                                    Toast.makeText(applicationContext, "Eliminado", Toast.LENGTH_LONG).show()
+                                                    finish()
+                                                }
+                                            }
+                                            .setSingleChoiceItems(adapters, 0) { dialog, which ->
+                                                subCa = adapters[which]
+                                            }.show()
+
+                                    }
+
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    TODO("Not yet implemented")
+                                }
+
+                            })
+
+                        }
+
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+
+                })
+            }else {
+                Snackbar.make(findViewById(android.R.id.content), "Seleccione una categoría", Snackbar.LENGTH_LONG)
+                    .show()
+            }
+        }catch (e: Exception) {
+
+        }
 
     }
 

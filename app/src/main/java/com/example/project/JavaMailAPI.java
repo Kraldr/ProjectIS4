@@ -49,7 +49,7 @@ public class JavaMailAPI extends AsyncTask<Void,Void,Void>  {
         mProgressDialog.dismiss();
 
         //Show success toast
-        Toast.makeText(mContext,"Message Sent",Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext,"Correo enviado",Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -65,13 +65,10 @@ class MainActivity : AppCompatActivity() {
         binding.appBarMain.toolbar.title = "Title"
 
         binding.appBarMain.fab.setOnClickListener {
-            sendMail()
-            /*val intent = Intent( this, sendEmail::class.java).apply {
+            val intent = Intent( this, sendEmail::class.java).apply {
             }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)*/
-
-
+            startActivity(intent)
         }
 
 
@@ -96,11 +93,6 @@ class MainActivity : AppCompatActivity() {
         configToolbar()
     }
 
-    private fun sendMail() {
-        //Send Mail
-        val javaMailAPI = JavaMailAPI(this, "amedina588@soyudemedellin.edu.co", "Prueba sub", "Prueba mesa")
-        javaMailAPI.execute()
-    }
 
 
     fun configToolbar() {
