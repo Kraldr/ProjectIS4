@@ -1,6 +1,7 @@
 package com.example.project
 
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -20,7 +21,6 @@ import kotlin.collections.ArrayList
 
 private lateinit var uniqueID: kotlin.String
 private lateinit var type: kotlin.String
-private lateinit var dialog: Dialog
 private lateinit var dbref : DatabaseReference
 private val listCard:MutableList<cardStart> = ArrayList()
 private var adapters = arrayOf<String?>()
@@ -30,56 +30,52 @@ private var subCa: String? = ""
 private var CaID: String? = ""
 private val SUB_CATEGORIES:MutableList<subCategoriesClass> = ArrayList()
 private val listCardTop:MutableList<contentClass> = ArrayList()
+private var mProgressDialog: ProgressDialog? = null
 
 class CreateSubCategory : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_sub_category)
 
-        try {
-            var uniqueID = UUID.randomUUID().toString()
+        var uniqueID = UUID.randomUUID().toString()
 
-            var txtUID = findViewById<EditText>(R.id.txtIDType)
-            var btnSubir = findViewById<Button>(R.id.btnRegistrar)
-            var btnDelete = findViewById<Button>(R.id.btnDelete)
-            val list = resources.getStringArray(R.array.typeCategory)
-            val adapters = ArrayAdapter(applicationContext, R.layout.list_item, list)
-            val text = findViewById<AutoCompleteTextView>(R.id.typeCategory)
-            text.setAdapter(adapters)
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.statusBarColor = Color.WHITE;
+        var txtUID = findViewById<EditText>(R.id.txtIDType)
+        var btnSubir = findViewById<Button>(R.id.btnRegistrar)
+        var btnDelete = findViewById<Button>(R.id.btnDelete)
+        val list = resources.getStringArray(R.array.typeCategory)
+        val adapters = ArrayAdapter(applicationContext, R.layout.list_item, list)
+        val text = findViewById<AutoCompleteTextView>(R.id.typeCategory)
+        text.setAdapter(adapters)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.statusBarColor = Color.WHITE;
 
-            txtUID.setText(uniqueID)
+        txtUID.setText(uniqueID)
 
-            setupArchiTypeRecy()
+        setupArchiTypeRecy()
 
-            btnDelete.setOnClickListener {
-                setupRecyclerSub()
-            }
+        btnDelete.setOnClickListener {
+            setupRecyclerSub()
+        }
 
-            btnSubir.setOnClickListener {
-                var txtTitle = findViewById<EditText>(R.id.txtTitle)
-                var txtUrl = findViewById<EditText>(R.id.txtURLI)
-                var txtTypeCategory = findViewById<EditText>(R.id.typeCategory)
+        btnSubir.setOnClickListener {
+            var txtTitle = findViewById<EditText>(R.id.txtTitle)
+            var txtUrl = findViewById<EditText>(R.id.txtURLI)
+            var txtTypeCategory = findViewById<EditText>(R.id.typeCategory)
 
-                if (txtTitle.text.toString() == ""){
-                    Snackbar.make(findViewById(android.R.id.content), "El título no puede ser vacío", Snackbar.LENGTH_LONG)
-                        .show()
-                }else if(txtTypeCategory.text.toString() == "") {
-                    Snackbar.make(findViewById(android.R.id.content), "El tipo no puede ser vacío", Snackbar.LENGTH_LONG)
-                        .show()
-                }else{
-                    if (txtTypeCategory.text.toString() == "Categoría") {
-                        loadSesion()
-                        crearType()
-                    }else if (txtTypeCategory.text.toString() == "Subcategoría"){
-                        loadSesion()
-                        setupArchiType()
-                    }
+            if (txtTitle.text.toString() == ""){
+                Snackbar.make(findViewById(android.R.id.content), "El título no puede ser vacío", Snackbar.LENGTH_LONG)
+                    .show()
+            }else if(txtTypeCategory.text.toString() == "") {
+                Snackbar.make(findViewById(android.R.id.content), "El tipo no puede ser vacío", Snackbar.LENGTH_LONG)
+                    .show()
+            }else{
+                mProgressDialog = ProgressDialog.show(this@CreateSubCategory, "Cargando", "Espere...", false, false)
+                if (txtTypeCategory.text.toString() == "Categoría") {
+                    crearType()
+                }else if (txtTypeCategory.text.toString() == "Subcategoría"){
+                    setupArchiType()
                 }
             }
-        }catch (e: Exception) {
-
         }
     }
 
@@ -94,14 +90,6 @@ class CreateSubCategory : AppCompatActivity() {
         }.apply()
     }
 
-    private fun loadSesion () {
-        dialog = Dialog(this)
-        dialog.setContentView(R.layout.layout_progress_bar_with_crear)
-        dialog.show()
-        dialog.setCancelable(false)
-        dialog.setCanceledOnTouchOutside(false)
-    }
-
     private fun crearType () {
         var txtUID = findViewById<EditText>(R.id.txtIDType)
         var txtTitle = findViewById<EditText>(R.id.txtTitle)
@@ -113,9 +101,10 @@ class CreateSubCategory : AppCompatActivity() {
         val cards = cardStart(UID, txtTitle.text.toString(), txtUrl.text.toString())
         database.child(UID).setValue(cards).addOnSuccessListener {
             Toast.makeText(this, "Categoría creada correctamente", Toast.LENGTH_LONG).show()
-            dialog.hide()
-            finish()
         }
+
+        mProgressDialog!!.dismiss()
+        finish()
     }
 
     private fun createSub (type: String) {
@@ -129,9 +118,10 @@ class CreateSubCategory : AppCompatActivity() {
         val subCategoryClass = subCategoriesClass(UID, txtTitle.text.toString(), txtUrl.text.toString(), type)
         database.child(UID).setValue(subCategoryClass).addOnSuccessListener {
             Toast.makeText(this, "Subcategoría creada correctamente", Toast.LENGTH_LONG).show()
-            dialog.hide()
-            finish()
         }
+
+        mProgressDialog!!.dismiss()
+        finish()
     }
 
     private fun setupArchiType() {
@@ -276,118 +266,121 @@ class CreateSubCategory : AppCompatActivity() {
 
                                         adapters = append(adapters, "Sin subcategoría")
 
-                                        MaterialAlertDialogBuilder(this@CreateSubCategory)
-                                            .setTitle("Seleccione el tipo de arhivo")
-                                            .setPositiveButton("Continuar") { _, _ ->
-                                                if (subCa!!.isEmpty()) {
-                                                    subCa = adapters[0]
-                                                }
-
-                                                if (subCa == "Sin subcategoría"){
-                                                    for (i in listCard) {
-                                                        if (i.id == CaID) {
-                                                            for (j in SUB_CATEGORIES) {
-                                                                if (j.category == i.id) {
-                                                                    val database = FirebaseDatabase.getInstance().reference.child("subCategory").child(
-                                                                        j.id
-                                                                    );
-                                                                    database.removeValue();
-                                                                }
-                                                            }
-                                                        }
+                                        try {
+                                            MaterialAlertDialogBuilder(this@CreateSubCategory)
+                                                .setTitle("Seleccione el tipo de arhivo")
+                                                .setPositiveButton("Continuar") { _, _ ->
+                                                    if (subCa!!.isEmpty()) {
+                                                        subCa = adapters[0]
                                                     }
 
-                                                    val database = FirebaseDatabase.getInstance().reference.child("ArchiType").child(CaID!!);
-                                                    database.removeValue();
-
-                                                    dbref = FirebaseDatabase.getInstance().getReference("content")
-                                                    dbref.addValueEventListener(object : ValueEventListener {
-
-                                                        override fun onDataChange(snapshot: DataSnapshot) {
-                                                            listCardTop.clear()
-
-                                                            if (snapshot.exists()){
-
-                                                                for (cardSnapshot in snapshot.children){
-                                                                    val content = cardSnapshot.getValue(contentClass::class.java)
-                                                                    if (content != null) {
-                                                                        listCardTop.add(content)
-                                                                    }
-                                                                }
-
-                                                                for (j in listCardTop) {
-                                                                    if (j.type == CaID) {
-                                                                        val database = FirebaseDatabase.getInstance().reference.child("content").child(
+                                                    if (subCa == "Sin subcategoría"){
+                                                        for (i in listCard) {
+                                                            if (i.id == CaID) {
+                                                                for (j in SUB_CATEGORIES) {
+                                                                    if (j.category == i.id) {
+                                                                        val database = FirebaseDatabase.getInstance().reference.child("subCategory").child(
                                                                             j.id
                                                                         );
                                                                         database.removeValue();
                                                                     }
                                                                 }
+                                                            }
+                                                        }
+
+                                                        val database = FirebaseDatabase.getInstance().reference.child("ArchiType").child(CaID!!);
+                                                        database.removeValue();
+
+                                                        dbref = FirebaseDatabase.getInstance().getReference("content")
+                                                        dbref.addValueEventListener(object : ValueEventListener {
+
+                                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                                listCardTop.clear()
+
+                                                                if (snapshot.exists()){
+
+                                                                    for (cardSnapshot in snapshot.children){
+                                                                        val content = cardSnapshot.getValue(contentClass::class.java)
+                                                                        if (content != null) {
+                                                                            listCardTop.add(content)
+                                                                        }
+                                                                    }
+
+                                                                    for (j in listCardTop) {
+                                                                        if (j.type == CaID) {
+                                                                            val database = FirebaseDatabase.getInstance().reference.child("content").child(
+                                                                                j.id
+                                                                            );
+                                                                            database.removeValue();
+                                                                        }
+                                                                    }
+
+                                                                }
 
                                                             }
 
+                                                            override fun onCancelled(error: DatabaseError) {
+                                                                TODO("Not yet implemented")
+                                                            }
+
+                                                        })
+                                                        Toast.makeText(applicationContext, "Eliminado", Toast.LENGTH_LONG).show()
+                                                        finish()
+                                                    }else {
+                                                        var subcaID = ""
+                                                        for (j in SUB_CATEGORIES) {
+                                                            if (subCa == j.title) {
+                                                                subcaID = j.id
+                                                                val database = FirebaseDatabase.getInstance().reference.child("subCategory").child(
+                                                                    j.id
+                                                                );
+                                                                database.removeValue();
+                                                            }
                                                         }
 
-                                                        override fun onCancelled(error: DatabaseError) {
-                                                            TODO("Not yet implemented")
-                                                        }
+                                                        dbref = FirebaseDatabase.getInstance().getReference("content")
+                                                        dbref.addValueEventListener(object : ValueEventListener {
 
-                                                    })
-                                                    Toast.makeText(applicationContext, "Eliminado", Toast.LENGTH_LONG).show()
-                                                    finish()
+                                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                                listCardTop.clear()
 
-                                                }else {
-                                                    var subcaID = ""
-                                                    for (j in SUB_CATEGORIES) {
-                                                        if (subCa == j.title) {
-                                                            subcaID = j.id
-                                                            val database = FirebaseDatabase.getInstance().reference.child("subCategory").child(
-                                                                j.id
-                                                            );
-                                                            database.removeValue();
-                                                        }
+                                                                if (snapshot.exists()){
+
+                                                                    for (cardSnapshot in snapshot.children){
+                                                                        val content = cardSnapshot.getValue(contentClass::class.java)
+                                                                        if (content != null) {
+                                                                            listCardTop.add(content)
+                                                                        }
+                                                                    }
+
+                                                                    for (j in listCardTop) {
+                                                                        if (j.typeSubTitle == subcaID) {
+                                                                            val database = FirebaseDatabase.getInstance().reference.child("content").child(
+                                                                                j.id
+                                                                            );
+                                                                            database.removeValue();
+                                                                        }
+                                                                    }
+
+                                                                }
+
+                                                            }
+
+                                                            override fun onCancelled(error: DatabaseError) {
+                                                                TODO("Not yet implemented")
+                                                            }
+
+                                                        })
+                                                        Toast.makeText(applicationContext, "Eliminado", Toast.LENGTH_LONG).show()
+                                                        finish()
                                                     }
-
-                                                    dbref = FirebaseDatabase.getInstance().getReference("content")
-                                                    dbref.addValueEventListener(object : ValueEventListener {
-
-                                                        override fun onDataChange(snapshot: DataSnapshot) {
-                                                            listCardTop.clear()
-
-                                                            if (snapshot.exists()){
-
-                                                                for (cardSnapshot in snapshot.children){
-                                                                    val content = cardSnapshot.getValue(contentClass::class.java)
-                                                                    if (content != null) {
-                                                                        listCardTop.add(content)
-                                                                    }
-                                                                }
-
-                                                                for (j in listCardTop) {
-                                                                    if (j.typeSubTitle == subcaID) {
-                                                                        val database = FirebaseDatabase.getInstance().reference.child("content").child(
-                                                                            j.id
-                                                                        );
-                                                                        database.removeValue();
-                                                                    }
-                                                                }
-
-                                                            }
-
-                                                        }
-
-                                                        override fun onCancelled(error: DatabaseError) {
-                                                            TODO("Not yet implemented")
-                                                        }
-
-                                                    })
-                                                    Toast.makeText(applicationContext, "Eliminado", Toast.LENGTH_LONG).show()
-                                                    finish()
                                                 }
-                                            }
-                                            .setSingleChoiceItems(adapters, 0) { dialog, which ->
-                                                subCa = adapters[which]
-                                            }.show()
+                                                .setSingleChoiceItems(adapters, 0) { dialog, which ->
+                                                    subCa = adapters[which]
+                                                }.show()
+                                        }catch (s :java.lang.Exception) {
+
+                                        }
 
                                     }
 
