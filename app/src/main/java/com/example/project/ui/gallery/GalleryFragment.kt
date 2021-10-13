@@ -106,8 +106,12 @@ class GalleryFragment : Fragment() {
                     }
 
                     recycler.apply {
-                        layoutManager = LinearLayoutManager(requireActivity().applicationContext)
-                        adapter = card_categories_adapter(all, type, requireActivity().applicationContext, subCategories)
+                        try {
+                            layoutManager = LinearLayoutManager(requireActivity().applicationContext)
+                            adapter = card_categories_adapter(all, type, requireActivity().applicationContext, subCategories)
+                        }catch (e: Exception) {
+
+                        }
                     }
 
                 }
